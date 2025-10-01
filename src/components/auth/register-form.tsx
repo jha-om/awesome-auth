@@ -46,6 +46,7 @@ export const RegisterForm = () => {
             })
         })
     }
+    
     return (
         <div>
             <CardWrapper
