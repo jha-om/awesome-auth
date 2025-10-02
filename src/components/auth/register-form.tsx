@@ -1,11 +1,11 @@
 "use client"
 
-import { CardWrapper } from "@/components/auth/card-wrapper"
+import { CardWrapper } from "@/src/components/auth/card-wrapper"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/src/components/ui/button"
 import {
     Form,
     FormControl,
@@ -13,13 +13,13 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
+} from "@/src/components/ui/form"
 import { useState, useTransition } from "react"
-import { register } from "../../../actions/register"
-import { RegisterSchema } from "../../../schemas"
-import { FormError } from "../form-error"
-import { FormSuccess } from "../form-success"
-import { Input } from "../ui/input"
+import { register } from "@/actions/register"
+import { RegisterSchema } from "@/schemas"
+import { FormError } from "@/src/components/form-error"
+import { FormSuccess } from "@/src/components/form-success"
+import { Input } from "@/src/components/ui/input"
 
 export const RegisterForm = () => {
     const [isPending, startTransaction] = useTransition();

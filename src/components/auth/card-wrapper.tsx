@@ -13,10 +13,10 @@ import {
     CardContent,
     CardFooter,
     CardHeader
-} from "@/components/ui/card"
-import { Header } from "@/components/auth/header"
-import { Social } from "@/components/auth/social"
-import { BackButton } from "@/components/auth/back-button"
+} from "@/src/components/ui/card"
+import { Header } from "@/src/components/auth/header"
+import { Social } from "@/src/components/auth/social"
+import { BackButton } from "@/src/components/auth/back-button"
 
 export const CardWrapper = ({
     children,

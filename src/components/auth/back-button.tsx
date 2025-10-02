@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Button } from "../ui/button"
+import { Button } from "@/src/components/ui/button"
 
 interface BackButtonProps {
     backButtonLabel: string,
