@@ -5,6 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { login } from "@/actions/login"
+import { LoginSchema } from "@/schemas"
+import { FormError } from "@/src/components/form-error"
+import { FormSuccess } from "@/src/components/form-success"
 import { Button } from "@/src/components/ui/button"
 import {
     Form,
@@ -14,14 +18,15 @@ import {
     FormLabel,
     FormMessage,
 } from "@/src/components/ui/form"
-import { LoginSchema } from "@/schemas"
 import { Input } from "@/src/components/ui/input"
-import { FormError } from "@/src/components/form-error"
-import { FormSuccess } from "@/src/components/form-success"
-import { login } from "@/actions/login"
+import { useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 
 export const LoginForm = () => {
+    const searchParams = useSearchParams();
+    const urlError = searchParams.get("error") === "OAuthAccountNotLinked"
+        ? "Email already in use with different provider!"
+        : "";
     const [isPending, startTransaction] = useTransition();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
@@ -96,7 +101,7 @@ export const LoginForm = () => {
                                 )}
                                 />
                         </div>
-                        <FormError message={error} />
+                        <FormError message={error || urlError} />
                         <FormSuccess message={success} />
                         <Button
                             type="submit"

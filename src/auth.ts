@@ -23,6 +23,10 @@ declare module "next-auth/jwt" {
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+    pages: {
+        signIn: '/auth/login',
+        error: '/auth/error',
+    },
     events: {
         async linkAccount({ user }) {
             await db.user.update({
