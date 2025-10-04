@@ -17,7 +17,7 @@ export default auth((req) => {
     const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
     const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-    // in this apiauthroute, it consists of /api/auth => 
+    // in this apiauthroute, it consists of /api/auth =>
     // meaning user will come to either log in or signup
     if (isApiAuthRoute) {
         return null;
