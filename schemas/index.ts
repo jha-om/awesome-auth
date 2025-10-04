@@ -15,6 +15,12 @@ export const ResetSchema = z.object({
     }),
 });
 
+export const NewPasswordSchema = z.object({
+    password: z.string().min(6, {
+        error: "Password is required"
+    }),
+});
+
 export const RegisterSchema = z.object({
     email: z.email({
         error: "Email is required"
