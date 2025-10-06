@@ -7,8 +7,11 @@ import { signIn } from "@/src/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/src/route";
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/src/utils/user";
-import { generateVerificationToken } from "@/src/lib/tokens";
-import { sendVerificationEmail } from "@/src/lib/mail";
+import { generateTwoFactorToken, generateVerificationToken } from "@/src/lib/tokens";
+import { sendTwoFactorTokenEmail, sendVerificationEmail } from "@/src/lib/mail";
+import { getTwoFactorTokenByEmail } from "@/src/utils/two-factor-token";
+import { db } from "@/src/lib/db";
+import { getTwoFactorConfirmationByUserId } from "@/src/utils/two-factor-confirmation";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
     const validatedFields = LoginSchema.safeParse(values);
@@ -17,8 +20,11 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
         return { error: "Invalid fields!" };
     }
 
-    const { email, password } = validatedFields.data;
-
+    const { email, password, code } = validatedFields.data;
+    
+    console.log(typeof code);
+    console.log("code: ", code);
+    
     const existingUser = await getUserByEmail(email);
 
     if (!existingUser || !existingUser.email || !existingUser.password) {
@@ -29,6 +35,55 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
         const verificationToken = await generateVerificationToken(existingUser.email);
         await sendVerificationEmail(verificationToken.email, verificationToken.token);
         return { success: "Confirmation email sent" };
+    }
+
+    if (existingUser.isTwoFactorEnabled && existingUser.email) {
+        console.log("YIPEEE! THERE IS A CODE:1 ");
+        if (code) {
+            console.log("YIPEEE! THERE IS A CODE:2");
+            const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
+
+            if (!twoFactorToken) {
+                return { error: "Invalid code!" };
+            }
+
+            if (twoFactorToken.token !== code) {
+                return { error: "Invalid code!" };
+            }
+
+            const hasExpired = new Date(twoFactorToken.expires) < new Date();
+            if (hasExpired) {
+                return { error: "Code expired!" };
+            }
+
+            await db.twoFactorToken.delete({
+                where: {
+                    id: twoFactorToken.id,
+                }
+            })
+
+            const existingConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+            if (existingConfirmation) {
+                await db.twoFactorConfirmation.delete({
+                    where: {
+                        id: existingConfirmation.id,
+                    }
+                })
+            }
+
+            await db.twoFactorConfirmation.create({
+                data: {
+                    userId: existingUser.id,
+                }
+            })
+
+
+        } else {
+            const twoFactorCode = await generateTwoFactorToken(existingUser.email);
+            await sendTwoFactorTokenEmail(twoFactorCode.email, twoFactorCode.token);
+            return { twoFactor: true }
+        }
     }
 
     try {
@@ -54,3 +109,4 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     }
     return { success: "Logged in successfully" };
 }
+
