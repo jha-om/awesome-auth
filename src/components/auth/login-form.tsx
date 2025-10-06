@@ -99,7 +99,7 @@ export const LoginForm = () => {
                                     )}
                                 />
                             )}
-                            <div className={showTwoFactor ? "hidden" : ""}>
+                            <div className={showTwoFactor ? "hidden" : "space-y-4"}>
                                 <FormField
                                     control={form.control}
                                     name="email"

@@ -2,10 +2,9 @@
 
 import { logout } from "@/actions/logout";
 import { Button } from "@/src/components/ui/button";
-import { useCurrentUser } from "@/src/hooks/use-current-user";
 
 const SettingsPage = () => {
-    const user = useCurrentUser();
+    // const user = useCurrentUser();
 
     // instead of using signOut() from next-auth/react
         // write signOut() and import it from next-auth/react

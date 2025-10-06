@@ -1,27 +1,11 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import NextAuth, { DefaultSession } from "next-auth"
-import { } from "next-auth/jwt"
 import authConfig from "@/src/auth.config"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import NextAuth from "next-auth"
+import { } from "next-auth/jwt"
 
 import { db } from "@/src/lib/db"
 import { getUserById } from "@/src/utils/user"
-import { UserRole } from "@prisma/client"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
-
-declare module "next-auth" {
-    interface Session {
-        user: {
-            role: UserRole
-        } & DefaultSession["user"]
-    }
-    
-}
-
-declare module "next-auth/jwt" {
-    interface JWT {
-        role?: UserRole
-    }
-}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
     pages: {
@@ -75,6 +59,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (token.role && session.user) {
                 session.user.role = token.role;
             }
+            if (session.user) {
+                session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean; 
+            }
             return session;
         },
         async jwt({ token }) {
@@ -89,6 +76,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             }
 
             token.role = existingUser.role;
+            token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
             return token;
         }
     },
