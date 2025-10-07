@@ -31,7 +31,16 @@ export default auth((req) => {
     }
 
     if (!isLoggedIn && !isPublicRoute) {
-        return Response.redirect(new URL("/auth/login", nextUrl));
+        // how can we change the URL after we login
+        // this is done in case we try to visit a protected route without logging in;
+
+        let callbackUrl = nextUrl.pathname;
+        if (nextUrl.search) {
+            callbackUrl += nextUrl.search
+        }
+
+        const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+        return Response.redirect(new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl));
     }
 
     return null;

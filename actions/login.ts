@@ -13,7 +13,10 @@ import { getTwoFactorTokenByEmail } from "@/src/utils/two-factor-token";
 import { db } from "@/src/lib/db";
 import { getTwoFactorConfirmationByUserId } from "@/src/utils/two-factor-confirmation";
 
-export const login = async (values: z.infer<typeof LoginSchema>) => {
+export const login = async (
+    values: z.infer<typeof LoginSchema>,
+    callbackUrl?: string,
+) => {
     const validatedFields = LoginSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -88,7 +91,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
             // this redirectTo is more explicit because the middleware automatically 
             // checks for the redirection.
             // written here just to add a custom callbackUrl;
-            redirectTo: DEFAULT_LOGIN_REDIRECT,
+            redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
         })
     } catch (error) {
         if (error instanceof AuthError) {
