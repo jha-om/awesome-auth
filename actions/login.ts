@@ -22,9 +22,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
     const { email, password, code } = validatedFields.data;
     
-    console.log(typeof code);
-    console.log("code: ", code);
-    
     const existingUser = await getUserByEmail(email);
 
     if (!existingUser || !existingUser.email || !existingUser.password) {
@@ -38,9 +35,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     }
 
     if (existingUser.isTwoFactorEnabled && existingUser.email) {
-        console.log("YIPEEE! THERE IS A CODE:1 ");
         if (code) {
-            console.log("YIPEEE! THERE IS A CODE:2");
             const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
 
             if (!twoFactorToken) {
